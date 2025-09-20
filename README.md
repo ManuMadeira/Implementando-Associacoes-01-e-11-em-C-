@@ -8,26 +8,22 @@ Veiculos -  Ratreador/Placa
 
 ## Tabela Invariantes:
 
-| Associação         | Multiplicidade   | Invariante                                                                 | Onde está garantido                  |
-|--------------------|------------------|----------------------------------------------------------------------------|---------------------------------------|
-| Veículo – Rastreador | 0..1 (opcional) | Um veículo pode ter nenhum ou um rastreador, nunca mais de um.              | Propriedade em `Veiculo.cs` (ideal encapsular com `AttachRastreador`) |
-| Veículo – Placa      | 1:1 (obrigatório) | Todo veículo deve ter exatamente uma placa, nunca nulo, nunca trocada.      | Classe `Placa.cs` (deve ser vinculada no construtor) |
-| Veículo             | Identidade      | `Id > 0`, `Modelo` não pode ser vazio, `Quilometragem ≥ 0`.                 | Validações em `Veiculo.cs` |
-| Rastreador          | Identidade      | `Id > 0`, `NumeroSerie` não pode ser vazio, vinculado a apenas um veículo. | Validações em `Rastreador.cs` |
-| Placa               | Identidade      | `Id > 0`, `Numero` não pode ser vazio, vinculado a apenas um veículo.      | Validações em `Placa.cs` |
+| Associação             | Multiplicidade   | Invariante                                                                 | Onde está garantido |
+|-------------------------|------------------|----------------------------------------------------------------------------|----------------------|
+| Veículo – Placa         | 1:1 (obrigatório)| Todo veículo deve ter exatamente **uma placa**. Nunca nula, nunca trocada. | Propriedade `Plate { get; }` em `Vehicle`, validada no construtor |
+| Veículo – Rastreador    | 0..1 (opcional)  | Um veículo pode ter **nenhum ou um rastreador**, nunca mais de um.         | Propriedade `Tracker { get; private set; }` + métodos `AttachTracker` / `DetachTracker` |
+| LicensePlate (Placa)    | Identidade       | `Code` não pode ser nulo ou vazio.                                         | Validação no construtor |
+| Tracker (Rastreador)    | Identidade       | `Id` não pode ser nulo ou vazio.                                           | Validação no construtor |
 
-| Classe    | Condição inválida                   | Exceção lançada                                                   |
-|-----------|-------------------------------------|-------------------------------------------------------------------|
-| Veículo   | `Id <= 0`                           | `ArgumentException("O ID deve ser um número positivo.")`          |
-| Veículo   | `Modelo` vazio/nulo                 | `ArgumentException("O modelo não pode ser nulo.")`                |
-| Veículo   | `Quilometragem < 0`                 | `ArgumentException("A quilometragem deve ser um número positivo.")` |
-| Veículo   | `alterarQuilometragem(acressimo < 0)` | `Exception("O acressimo não pode ser negativo")`                  |
-| Rastreador| `Id <= 0`                           | `ArgumentException("O ID deve ser um número positivo.")`          |
-| Rastreador| `NumeroSerie` vazio/nulo            | `ArgumentException("O número da placa não pode ser nulo.")`       |
-| Rastreador| `VeiculoId <= 0`                    | `ArgumentException("O ID deve ser um número positivo.")`          |
-| Placa     | `Id <= 0`                           | `ArgumentException("O ID deve ser um número positivo.")`          |
-| Placa     | `Numero` vazio/nulo                 | `ArgumentException("O número da placa não pode ser nulo.")`       |
-| Placa     | `VeiculoId <= 0`                    | `ArgumentException("O ID deve ser um número positivo.")`          |
+## Tabela de Exceções:
+
+| Classe         | Condição inválida                   | Ação / Exceção lançada                                        |
+|----------------|--------------------------------------|---------------------------------------------------------------|
+| Vehicle        | Criar veículo sem placa (`null`)      | `ArgumentNullException(nameof(plate))`                        |
+| LicensePlate   | `Code` vazio ou nulo                 | `ArgumentException("Placa obrigatória e não pode ser vazia")` |
+| Tracker        | `Id` vazio ou nulo                   | `ArgumentException("ID do rastreador inválido")`              |
+| Vehicle.AttachTracker | `Tracker` nulo                 | Retorna `false` (entrada inválida não é aceita)               |
+| Vehicle.AttachTracker | Já existe rastreador atribuído | Retorna `false` (mantém invariante 0..1)                      |
 
 ## Decisões de navegabilidade:
 
