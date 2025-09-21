@@ -26,8 +26,13 @@ Veiculos -  Ratreador/Placa
 | Vehicle.AttachTracker | Já existe rastreador atribuído | Retorna `false` (mantém invariante 0..1)                      |
 
 ## Decisões de navegabilidade:
+- Veículo → Placa: unidirecional
+- Veículo → Rastreador: unidirecional
 
 ## Justificativas:
+- A placa é obrigatória e serve como identificação do veículo. O sistema só precisa acessá-la a partir do veículo; não há caso de uso que exija consultar o veículo pela placa.
+- O rastreador é opcional e também só precisamos consultá-lo a partir do veículo. Não há necessidade de buscar o veículo a partir do rastreador.
+- Dessa forma, aplicamos o princípio da **direção mínima**, evitando bidirecionalidade desnecessária, reduzindo acoplamento e mantendo o modelo simples e claro.
 
 ### Associação entre Veiculo e Rastreador
  A decisão de permitir a navegação bidirecional (tanto do Veículo para o Rastreador quanto do Rastreador para o Veículo) é justificada pela funcionalidade do sistema. O rastreador precisa ter acesso ao veículo ao qual está associado para poder atualizar a quilometragem dele. Por exemplo, a classe Rastreador possui um método alterarQuilometragem() que interage diretamente com o objeto Veiculo para somar a quilometragem. Além disso, em cenários futuros, o veículo pode precisar acessar dados do rastreador para relatórios ou monitoramento, tornando a navegação bidirecional mais eficiente.
